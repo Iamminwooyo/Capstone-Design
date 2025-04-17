@@ -12,7 +12,7 @@
 
 .searchpin-img {
   position: absolute;
-  top: 45px;
+  top: -1px;
   right: -5px;
   width: 60px;
   height: 40px;
@@ -42,7 +42,7 @@
 
 .todo_img {
   border-radius: 15px;
-  background-image: url('../../../img2.webp'); 
+  background-image: url('../../../public/images/img2.webp'); 
   background-size: cover;         
   background-position: center;    
   background-repeat: no-repeat;   
