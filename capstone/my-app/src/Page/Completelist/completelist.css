@@ -1,0 +1,45 @@
+.main_layout {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; 
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+.complete_main_background {
+  background-color: #D5F5E3;
+  border-radius: 25px;
+  margin-top: 30px;
+  padding: 0 50px;
+  padding-top: 50px;
+  padding-bottom: 20px;
+  width: 850px;
+}
+  .todo_container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* To Do와 Project 간격 */
+  }
+  
+  .task_group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* 리스트와 제목 간격 */
+  }
+  
+  .complete_list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* 카드 간격 */
+    height: 770px;
+  }
+  
+  .todo_card {
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
