@@ -10,21 +10,37 @@ const PasswordModal = ({ isOpen, onOk, onCancel }) => {
   const [isUserVerified, setIsUserVerified] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 전화번호 입력값 형식 지정
   const handlePhoneChange = (e) => {
-    let value = e.target.value;
-    let formattedValue = value.replace(/[^\d]/g, '');
-    if (formattedValue.length > 3 && formattedValue.length <= 6) {
-      formattedValue = formattedValue.substring(0, 3) + '-' + formattedValue.substring(3);
-    } else if (formattedValue.length > 6) {
-      formattedValue = formattedValue.substring(0, 3) + '-' + formattedValue.substring(3, 7) + '-' + formattedValue.substring(7, 11);
+    const numbersOnly = e.target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
+    let formatted = '';
+  
+    if (numbersOnly.length <= 3) {
+      formatted = numbersOnly;
+    } else if (numbersOnly.length <= 7) {
+      formatted = `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3)}`;
+    } else {
+      formatted = `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3, 7)}-${numbersOnly.slice(7, 11)}`;
     }
-    setUserPhone(formattedValue);
+  
+    setUserPhone(formatted);
+  
+    // 입력이 13자 되었을 때만 유효성 체크
+    if (formatted.length === 13) {
+      const phoneRegex = /^010-\d{4}-\d{4}$/;
+      if (!phoneRegex.test(formatted)) {
+        message.error('전화번호 형식이 올바르지 않습니다.');
+      }
+    }
   };
 
   // 사용자 정보 확인 요청
   const handleVerifyUser = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     if (!userId) {
       message.error('아이디를 입력해주세요!');
       return;
@@ -57,11 +73,16 @@ const PasswordModal = ({ isOpen, onOk, onCancel }) => {
         message.error('본인 확인 중 오류가 발생했습니다.');
       }
       console.error('본인 확인 에러:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   // 비밀번호 변경 요청
   const handleChangePassword = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     if (!newPassword) {
       message.error('새 비밀번호를 입력해주세요!');
       return;
@@ -104,6 +125,8 @@ const PasswordModal = ({ isOpen, onOk, onCancel }) => {
         message.error('비밀번호 변경 중 오류가 발생했습니다.');
       }
       console.error('비밀번호 변경 에러:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -129,18 +152,20 @@ const PasswordModal = ({ isOpen, onOk, onCancel }) => {
       <div className="modal-form-group" style={{ marginTop: '20px' }}>
         <label className="modal_label">ID</label>
         <Input
-          placeholder="아이디를 입력하세요"
+          placeholder="ID"
           value={userId}
           onChange={(e) => setUserId(e.target.value)}
+          className='modal_input-field'
         />
       </div>
 
       <div className="modal-form-group">
         <label className="modal_label">이름</label>
         <Input
-          placeholder="이름을 입력하세요"
+          placeholder="name"
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
+          className='modal_input-field'
         />
       </div>
 
@@ -148,9 +173,10 @@ const PasswordModal = ({ isOpen, onOk, onCancel }) => {
         <label className="modal_label">전화번호</label>
         <Input
           type="tel"
-          placeholder="010-1234-5678"
+          placeholder="phone number"
           value={userPhone}
           onChange={handlePhoneChange}
+          className='modal_input-field'
         />
       </div>
 
@@ -159,18 +185,20 @@ const PasswordModal = ({ isOpen, onOk, onCancel }) => {
           <div className="modal-form-group">
             <label className="modal_label">새 비밀번호</label>
             <Input.Password
-              placeholder="새 비밀번호를 입력하세요"
+              placeholder="new password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              className='modal_input-field'
             />
           </div>
 
           <div className="modal-form-group">
             <label className="modal_label">비밀번호 확인</label>
             <Input.Password
-              placeholder="비밀번호를 다시 입력하세요"
+              placeholder="password confirm"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              className='modal_input-field'
             />
           </div>
 
