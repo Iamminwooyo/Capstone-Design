@@ -12,6 +12,7 @@ const JoinPage = () => {
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const messageShownRef = useRef(false);
 
@@ -23,6 +24,9 @@ const JoinPage = () => {
 
   // ID 중복 여부를 확인하는 함수
   const checkDuplicateId = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     if (!userId) {
       message.warning('ID를 입력하세요!');
       return;
@@ -48,11 +52,16 @@ const JoinPage = () => {
         message.error('ID 중복 확인 중 오류가 발생했습니다.');
         console.error(error);
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   // 회원가입 요청을 처리하는 함수
   const handleJoin = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     if (!userId) {
       message.error('ID를 입력하세요!');
       return;
@@ -97,6 +106,8 @@ const JoinPage = () => {
     } catch (error) {
       message.error('회원가입 중 오류가 발생했습니다.');
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -165,15 +176,25 @@ const JoinPage = () => {
 
   // 전화번호 입력 시 자동 포맷팅 및 유효성 검사
   const handlePhoneChange = (e) => {
-    let value = e.target.value.replace(/[^0-9]/g, '');
-    if (value.length > 3 && value.length <= 6) {
-      value = value.substring(0, 3) + '-' + value.substring(3);
-    } else if (value.length > 6) {
-      value = value.substring(0, 3) + '-' + value.substring(3, 7) + '-' + value.substring(7, 11);
-    }
-    setPhoneNumber(value);
+    let numbersOnly = e.target.value.replace(/[^0-9]/g, ''); // 숫자만 추출
+    let formatted = '';
 
-    if (value.length === 13 && !phoneRegex.test(value)) {
+    if (numbersOnly.length <= 3) {
+      formatted = numbersOnly;
+    } else if (numbersOnly.length <= 7) {
+      formatted = numbersOnly.slice(0, 3) + '-' + numbersOnly.slice(3);
+    } else {
+      formatted =
+        numbersOnly.slice(0, 3) +
+        '-' +
+        numbersOnly.slice(3, 7) +
+        '-' +
+        numbersOnly.slice(7, 11);
+    }
+
+    setPhoneNumber(formatted);
+
+    if (formatted.length === 13 && !phoneRegex.test(formatted)) {
       message.error('전화번호 형식이 올바르지 않습니다.');
     }
   };
@@ -214,7 +235,7 @@ const JoinPage = () => {
 
         {/* 비밀번호 */}
         <div style={{ marginTop: '-20px' }}>
-          <Input
+          <Input.Password
             type="password"
             placeholder="password"
             className="input-field"
@@ -225,7 +246,7 @@ const JoinPage = () => {
 
         {/* 비밀번호 확인 */}
         <div style={{ marginTop: '-2px' }}>
-          <Input
+          <Input.Password
             type="password"
             placeholder="password confirm"
             className="input-field"
